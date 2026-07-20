@@ -1,7 +1,7 @@
 import requests
 
 # Put your exact protected playlist link inside the quotes below
-TARGET_URL = "https://onm.rocket-ott.shop/n2hpXDJO3o/playlist.m3u"
+TARGET_URL = "https://starlineiptv.blogspot.com/2026/07/akses-saluran-iptv-dapatkan-user-agent.html"
 OUTPUT_FILE = "discovered_links.txt"
 
 def fetch_secured_playlist():
