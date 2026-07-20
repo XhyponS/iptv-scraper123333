@@ -1,11 +1,10 @@
 import requests
-import re
 
-# Directly targeting an alternative open-source repository that aggregates live streams
+# Connecting directly to an active third-party open repository that hosts custom Malaysian streams
 TARGET_URL = "https://githubusercontent.com"
 OUTPUT_FILE = "discovered_links.txt"
 
-# Your specific track keys to extract cleanly
+# Your specific track keys to extract
 CHANNELS = ["ria", "prima", "citra", "ceria", "oasis", "arena", "bola", "showtime", "showcase", "daebak"]
 
 def fetch_malay_streams():
@@ -20,12 +19,10 @@ def fetch_malay_streams():
         playlist_content = "#EXTM3U\n"
         found_count = 0
         
-        # Step through the playlist arrays systematically
         for i in range(len(lines)):
             if lines[i].startswith("#EXTINF"):
                 line_lower = lines[i].lower()
                 
-                # Check for matches against your Astro targets
                 if any(ch in line_lower for ch in CHANNELS):
                     if i + 1 < len(lines) and lines[i+1].startswith("http"):
                         playlist_content += f"{lines[i]}\n{lines[i+1]}\n"
@@ -35,6 +32,12 @@ def fetch_malay_streams():
             f.write(playlist_content)
             
         print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
+        
+    except Exception as e:
+        print(f"A processing routine error occurred: {e}")
+
+if __name__ == "__main__":
+    fetch_malay_streams()        print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
         
     except Exception as e:
         print(f"A processing routine error occurred: {e}")
