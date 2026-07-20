@@ -43,4 +43,13 @@ def harvest_web_links():
     print("Harvest complete.")
 
 if __name__ == "__main__":
+    harvest_web_links()                    playlist_content += f"\n# From source: {url}\n{res.text}\n"
+        except:
+            continue
+            
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(playlist_content)
+    print("Harvest complete.")
+
+if __name__ == "__main__":
     harvest_web_links()
