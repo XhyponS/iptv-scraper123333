@@ -1,7 +1,7 @@
 import requests
 
 # This script bypasses search engine constraints by grabbing the entire curated Malaysia data stream cluster
-REGIONAL_PLAYLIST_URL = "https://githubusercontent.com"
+REGIONAL_PLAYLIST_URL = "https://raw.githubusercontent.com"
 OUTPUT_FILE = "discovered_links.txt"
 
 def build_playlist():
