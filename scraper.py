@@ -36,8 +36,13 @@ def fetch_malay_streams():
     except Exception as e:
         print(f"A processing routine error occurred: {e}")
 
-if __name__ == "__main__":
-    fetch_malay_streams()        print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
+print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
+        
+    except Exception as e:
+        print(f"A processing routine error occurred: {e}")
+
+if _name_ == "_main_":
+    fetch_malay_streams()
         
     except Exception as e:
         print(f"A processing routine error occurred: {e}")
