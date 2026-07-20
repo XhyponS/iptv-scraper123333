@@ -27,42 +27,10 @@ def fetch_malay_streams():
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(playlist_content)
             
-        print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
+        print("Extraction complete.")
         
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print("An error occurred during execution.")
 
 if __name__ == "__main__":
-    fetch_malay_streams()        print(f"A processing routine error occurred: {e}")
-
-print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
-        
-    except Exception as e:
-        print(f"A processing routine error occurred: {e}")
-
-if _name_ == "_main_":
     fetch_malay_streams()
-        
-    except Exception as e:
-        print(f"A processing routine error occurred: {e}")
-
-if __name__ == "__main__":
-    fetch_malay_streams()                    playlist_content += f"\n# From source: {url}\n{res.text}\n"
-        except:
-            continue
-            
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(playlist_content)
-    print("Harvest complete.")
-
-if __name__ == "__main__":
-    harvest_web_links()                    playlist_content += f"\n# From source: {url}\n{res.text}\n"
-        except:
-            continue
-            
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(playlist_content)
-    print("Harvest complete.")
-
-if __name__ == "__main__":
-    harvest_web_links()
