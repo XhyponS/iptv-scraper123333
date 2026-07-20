@@ -1,41 +1,40 @@
 import requests
-import re
 
-# Targeting a live, alternative stream service mirror node
-TARGET_URL = "https://githubusercontent.com"
+# Put your exact protected playlist link inside the quotes below
+TARGET_URL = "https://onm.rocket-ott.shop/n2hpXDJO3o/playlist.m3u"
 OUTPUT_FILE = "discovered_links.txt"
 
-# Keywords configured to match name strings used by live streaming nodes
-CHANNELS = ["ria", "prima", "citra", "ceria", "oasis", "arena", "bola", "showtime", "showcase", "daebak"]
-
-def fetch_malay_streams():
-    print("Connecting to live streaming data node...")
+def fetch_secured_playlist():
+    print("Connecting to secure stream node...")
+    
+    # Passing specialized identity headers to trick the server into skipping the store redirect
+    headers = {
+        "User-Agent": "OTT-Navigator/1.7.4.1 (Linux; Android 11)",
+        "Accept": "*/*",
+        "Connection": "keep-alive"
+    }
+    
     try:
-        response = requests.get(TARGET_URL, timeout=15)
+        # The script passes the custom application header block alongside the web request
+        response = requests.get(TARGET_URL, headers=headers, timeout=15)
+        
         if response.status_code != 200:
-            print("Target mirror node is offline.")
+            print(f"Server rejected request with status code: {response.status_code}")
             return
             
-        lines = response.text.split("\n")
-        playlist_content = "#EXTM3U\n"
-        found_count = 0
+        playlist_text = response.text
         
-        for i in range(len(lines)):
-            if lines[i].startswith("#EXTINF"):
-                line_lower = lines[i].lower()
-                # Flexibly track matching entries across the stream manifest array
-                if any(ch in line_lower for ch in CHANNELS):
-                    if i + 1 < len(lines) and lines[i+1].strip().startswith("http"):
-                        playlist_content += f"{lines[i]}\n{lines[i+1].strip()}\n"
-                        found_count += 1
-                        
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(playlist_content)
+        # Verify if we received valid playlist tracks or a web redirect text
+        if "#EXTM3U" in playlist_text:
+            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+                f.write(playlist_text)
+            lines_count = len(playlist_text.split("\n"))
+            print(f"Extraction successful! Saved {lines_count} lines into playlist file.")
+        else:
+            print("Warning: Received data layout, but it lacks playlist formatting parameters.")
             
-        print(f"Extraction complete. Found {found_count} links.")
-        
     except Exception as e:
-        print("An error occurred during execution.")
+        print(f"A processing network routine error occurred: {e}")
 
 if __name__ == "__main__":
-    fetch_malay_streams()
+    fetch_secured_playlist()
