@@ -1,53 +1,49 @@
-import time
 import requests
-from bs4 import BeautifulSoup
-from googlesearch import search  # Install via: pip install googlesearch-python
 
-# A robust list of Google Dorks targeting open directories and text lists across the internet
-DORK_QUERIES = [
-  'filetype:m3u "extinf" "Astro Ria" OR "Astro Prima" OR "Astro Citra" OR "Astro Ceria" OR "Astro Oasis" "http"',
-    'filetype:m3u "extinf" "Astro Arena" OR "Astro Bola" OR "Astro Showtime" OR "Astro Showcase" OR "Astro Daebak" "http"',
-    'intitle:"index of" "m3u8" "Astro" OR "Bola 1" OR "Bola 2" OR "Arena 1" OR "Arena 2"',
-    'inurl:playlist.m3u8 "Astro Ria" OR "Astro Prima" OR "Astro Citra" OR "Astro Ceria" OR "Astro Arena"'
+# 1. Target Channels List (Must match naming conventions in global databases)
+TARGET_CHANNELS = [
+    "Astro Ria", "Astro Prima", "Astro Citra", "Astro Ceria", 
+    "Astro Oasis", "Astro Arena", "Astro Bola", "Astro Showtime", 
+    "Astro Showcase", "Astro Daebak", "Bola 1", "Bola 2", 
+    "Arena 1", "Arena 2"
 ]
 
-def harvest_links():
-    found_urls = []
-    print("Initiating broad web search via Google Dorks...")
-    
-    for query in DORK_QUERIES:
-        try:
-            print(f"Searching for: {query}")
-            # Crawling search engine results across the web
-            for url in search(query, num_results=15, sleep_interval=5):
-                found_urls.append(url)
-        except Exception as e:
-            print(f"Search engine rate-limit triggered: {e}")
-            
-    return list(set(found_urls))
+# 2. Source database (Using the massive, community-updated iptv-org index)
+SOURCE_URL = "https://github.io"
+OUTPUT_FILE = "discovered_links.txt"
 
-def parse_and_validate(urls):
-    valid_streams = []
-    headers = {"User-Agent": "Mozilla/5.0"}
-    
-    for url in urls:
-        try:
-            # If the discovered URL is a direct playlist, download it
-            if url.endswith(('.m3u', '.m3u8')):
-                res = requests.get(url, headers=headers, timeout=5)
-                if "#EXTM3U" in res.text:
-                    valid_streams.append(url)
-        except:
-            continue
+def harvest_channels():
+    print("Downloading global streaming index database...")
+    try:
+        response = requests.get(SOURCE_URL, timeout=15)
+        if response.status_code != 200:
+            print("Failed to download database node.")
+            return
             
-    return valid_streams
+        lines = response.text.split("\n")
+        playlist_content = "#EXTM3U\n"
+        found_count = 0
+        
+        # 3. Parse and filter specifically for your Astro channels
+        for i in range(len(lines)):
+            if lines[i].startswith("#EXTINF"):
+                # Check if any of your requested channels are on this track line
+                for channel in TARGET_CHANNELS:
+                    if channel.lower() in lines[i].lower():
+                        # Grab the next line which contains the streaming URL
+                        if i + 1 < len(lines) and lines[i+1].startswith("http"):
+                            playlist_content += f"{lines[i]}\n{lines[i+1]}\n"
+                            found_count += 1
+                            break
+                            
+        # 4. Save parsed results
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(playlist_content)
+            
+        print(f"Success! Filtered and saved {found_count} active stream pathways.")
+        
+    except Exception as e:
+        print(f"An execution error occurred: {e}")
 
 if __name__ == "__main__":
-    discovered_sources = harvest_links()
-    verified_playlists = parse_and_validate(discovered_sources)
-    
-    # Save the harvested repositories to your folder structure
-    with open("discovered_links.txt", "w") as f:
-        for link in verified_playlists:
-            f.write(f"{link}\n")
-    print(f"Done. Discovered {len(verified_playlists)} open-web index links.")
+    harvest_channels()
