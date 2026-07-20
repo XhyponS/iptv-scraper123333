@@ -1,10 +1,7 @@
 import requests
 
-# Connecting directly to an active third-party open repository that hosts custom Malaysian streams
 TARGET_URL = "https://githubusercontent.com"
 OUTPUT_FILE = "discovered_links.txt"
-
-# Your specific track keys to extract
 CHANNELS = ["ria", "prima", "citra", "ceria", "oasis", "arena", "bola", "showtime", "showcase", "daebak"]
 
 def fetch_malay_streams():
@@ -12,7 +9,7 @@ def fetch_malay_streams():
     try:
         response = requests.get(TARGET_URL, timeout=15)
         if response.status_code != 200:
-            print("Target mirror node is currently offline.")
+            print("Target mirror node is offline.")
             return
             
         lines = response.text.split("\n")
@@ -22,7 +19,6 @@ def fetch_malay_streams():
         for i in range(len(lines)):
             if lines[i].startswith("#EXTINF"):
                 line_lower = lines[i].lower()
-                
                 if any(ch in line_lower for ch in CHANNELS):
                     if i + 1 < len(lines) and lines[i+1].startswith("http"):
                         playlist_content += f"{lines[i]}\n{lines[i+1]}\n"
@@ -34,7 +30,10 @@ def fetch_malay_streams():
         print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
         
     except Exception as e:
-        print(f"A processing routine error occurred: {e}")
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    fetch_malay_streams()        print(f"A processing routine error occurred: {e}")
 
 print(f"Extraction successful. Generated {found_count} clean streaming tracks.")
         
