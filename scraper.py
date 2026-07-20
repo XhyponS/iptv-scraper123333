@@ -1,10 +1,11 @@
 import requests
+import re
 
-# Targeting a major alternative active network stream compilation file
+# Targeting a live, alternative stream service mirror node
 TARGET_URL = "https://githubusercontent.com"
 OUTPUT_FILE = "discovered_links.txt"
 
-# Search tags to catch any variations (like Astro Ria, Astro Ria HD, Astro Ceria, etc.)
+# Keywords configured to match name strings used by live streaming nodes
 CHANNELS = ["ria", "prima", "citra", "ceria", "oasis", "arena", "bola", "showtime", "showcase", "daebak"]
 
 def fetch_malay_streams():
@@ -22,10 +23,10 @@ def fetch_malay_streams():
         for i in range(len(lines)):
             if lines[i].startswith("#EXTINF"):
                 line_lower = lines[i].lower()
-                # Check for matches against your Astro target keywords
+                # Flexibly track matching entries across the stream manifest array
                 if any(ch in line_lower for ch in CHANNELS):
-                    if i + 1 < len(lines) and lines[i+1].startswith("http"):
-                        playlist_content += f"{lines[i]}\n{lines[i+1]}\n"
+                    if i + 1 < len(lines) and lines[i+1].strip().startswith("http"):
+                        playlist_content += f"{lines[i]}\n{lines[i+1].strip()}\n"
                         found_count += 1
                         
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
