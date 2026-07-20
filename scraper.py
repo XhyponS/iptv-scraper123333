@@ -1,47 +1,46 @@
+import time
 import requests
+from googlesearch import search
 
-# The main active global index stream file node
-REGIONAL_PLAYLIST_URL = "https://github.io"
-OUTPUT_FILE = "discovered_links.txt"
-
-# Your specific list of target channels
-ASTRO_CHANNELS = [
-    "astro ria", "astro prima", "astro citra", "astro ceria", 
-    "astro oasis", "astro arena", "astro bola", "bola 1", "bola 2", 
-    "arena 1", "arena 2", "astro showtime", "astro showcase", "astro daebak"
+# Customized queries targeting unprotected text dumps and playlists across the open web
+DORK_QUERIES = [
+    'filetype:m3u "extinf" "Astro Ria" OR "Astro Prima" OR "Astro Citra"',
+    'intitle:"index of" "m3u8" "Astro" OR "Bola" OR "Arena"',
+    'inurl:playlist.m3u8 "Astro Ria" OR "Astro Ceria"',
+    '"#EXTINF" "Astro Arena" "http"'
 ]
 
-def build_playlist():
-    print("Fetching direct global open data streams...")
-    try:
-        response = requests.get(REGIONAL_PLAYLIST_URL, timeout=15)
-        if response.status_code != 200:
-            print("Target data stream server node is currently unreachable.")
-            return
+OUTPUT_FILE = "discovered_links.txt"
+
+def harvest_web_links():
+    found_urls = []
+    print("Initiating custom internet harvesting pass...")
+    
+    # 1. Query public search indexes for active configurations
+    for query in DORK_QUERIES:
+        try:
+            print(f"Searching index for: {query}")
+            for url in search(query, num_results=10, sleep_interval=10):
+                found_urls.append(url)
+        except Exception as e:
+            print(f"Search engine delay triggered: {e}")
             
-        lines = response.text.split("\n")
-        playlist_content = "#EXTM3U\n"
-        found_count = 0
-        
-        # Parse the dataset step-by-step
-        for i in range(len(lines)):
-            if lines[i].startswith("#EXTINF"):
-                line_lower = lines[i].lower()
-                # Check if ANY of your specified Astro channels match this specific track line
-                match_found = any(channel in line_lower for channel in ASTRO_CHANNELS)
-                
-                if match_found:
-                    if i + 1 < len(lines) and lines[i+1].startswith("http"):
-                        playlist_content += f"{lines[i]}\n{lines[i+1]}\n"
-                        found_count += 1
-                        
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(playlist_content)
+    playlist_content = "#EXTM3U\n"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    # 2. Extract content logs from found targets
+    for url in list(set(found_urls)):
+        try:
+            if not url.endswith(('.html', '.htm')):
+                res = requests.get(url, headers=headers, timeout=5)
+                if "#EXTM3U" in res.text or "http" in res.text:
+                    playlist_content += f"\n# From source: {url}\n{res.text}\n"
+        except:
+            continue
             
-        print(f"Transfer complete. Generated {found_count} Astro stream entries successfully.")
-        
-    except Exception as e:
-        print(f"Network error during script parsing loop: {e}")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(playlist_content)
+    print("Harvest complete.")
 
 if __name__ == "__main__":
-    build_playlist()
+    harvest_web_links()
