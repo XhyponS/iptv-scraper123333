@@ -1,40 +1,28 @@
 import requests
+from bs4 import BeautifulSoup
 
-# Put your exact protected playlist link inside the quotes below
-TARGET_URL = "https://starlineiptv.blogspot.com/2026/07/akses-saluran-iptv-dapatkan-user-agent.html"
-OUTPUT_FILE = "discovered_links.txt"
-
-def fetch_secured_playlist():
-    print("Connecting to secure stream web...")
-    
-    # Passing specialized identity headers to trick the server into skipping the store redirect
+def google_search(query, num_results=10):
     headers = {
-        "User-Agent": "OTT-Navigator/1.7.6.1 (Linux; Android 11)",
-        "Accept": "*/*",
-        "Connection": "keep-alive"
+        "User-Agent": "Mozilla/5.0"
     }
-    
-    try:
-        # The script passes the custom application header black alongside the web request
-        response = requests.get(TARGET_URL, headers=headers, timeout=15)
-        
-        if response.status_code != 200:
-            print(f"Server rejected request with status code: {response.status_code}")
-            return
+    search_url = f"https://www.google.com/search?q={query}&num={num_results}"
+    response = requests.get(search_url, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = []
+        for g in soup.find_all('div', class_='g'):
+            link = g.find('a', href=True)
+            if link:
+                results.append(link['href'])
+        return results
+    else:
+        print("Failed to retrieve search results.")
+        return []
 
-        playlist_text = response.text
-
-        # Verify if we received valid playlist tracks or a web redirect text
-        if "#EXTM3U" in playlist_text:
-            # 1. Save the complete playlist file
-            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-                f.write(playlist_text)
-            
-            # 2. Look through the text and extract individual streaming URLs
-            print("\n--- Scanning Playlist for Streaming Links ---")
-            link_count = 0
-            for line in playlist_text.splitlines():
-                if line.strip().startswith("http"):
+search_query = 'site:pastebin.com "astro" "iptv"'
+results = google_search(search_query)
+for url in results:
+    print(url)                if line.strip().startswith("http"):
                     print(f"Found streaming link: {line.strip()}")
                     link_count += 1
             
