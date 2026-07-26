@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-url_to_scrape = 'https://onm.rocket-ott.shop/n2hpXDJO3o/playlist.m3u'
+url_to_scrape = 'https://starlineiptv.blogspot.com/2026/07/ijijbv.html'
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
